@@ -20,7 +20,7 @@ class ImageUpload extends BaseController
 			if ($this->validate($rules)) {
 
 				$image = $this->request->getFile('image');
-				$image->move(WRITEPATH . 'uploads');
+				$image->move('uploads');
 			
 				return redirect()->back()->with('success', 'Data berhasil disimpan');
 			}
