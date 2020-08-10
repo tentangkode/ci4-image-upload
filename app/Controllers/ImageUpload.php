@@ -4,6 +4,8 @@ class ImageUpload extends BaseController
 {
 	public function index()
 	{
+		$db = \Config\Database::connect();
+
 		if ($this->request->getMethod() === 'post') {
 
 			$rules = [
@@ -20,7 +22,13 @@ class ImageUpload extends BaseController
 			if ($this->validate($rules)) {
 
 				$image = $this->request->getFile('image');
-				$image->move('uploads');
+				$fileName = time().$image->getClientName();
+				$image->move('uploads', $fileName);
+
+				$db->table('gallery')->insert([
+					'keterangan' => $this->request->getPost('keterangan'),
+					'nama_file' => $fileName
+				]);
 			
 				return redirect()->back()->with('success', 'Data berhasil disimpan');
 			}
@@ -29,7 +37,9 @@ class ImageUpload extends BaseController
 
 		}
 
-		return view('upload');
+		$data['images'] = $db->table('gallery')->get()->getResult();
+
+		return view('upload', $data);
 	}
 
 }
